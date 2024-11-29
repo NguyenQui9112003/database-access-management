@@ -5,7 +5,7 @@ import org.example.config.DatabaseConfig;
 import org.example.connection.PostgresConnectionFactory;
 import org.example.service.DatabaseService;
 import org.example.service.DatabaseServiceConcrete;
-import org.example.service.PostgresDatabaseServiceConcrete;
+import org.example.service.PostgresDatabaseService;
 import org.example.entity.User;
 
 public class Main {
@@ -16,7 +16,7 @@ public class Main {
         Connection con = pgConnection.createConnection(dbConfig);
 
         // Tạo factory và service cho PostgreSQL
-        DatabaseServiceConcrete factory = new PostgresDatabaseServiceConcrete();
+        DatabaseServiceConcrete factory = new PostgresDatabaseService();
         DatabaseService dbService = factory.createDatabaseService(con);
 
         // Tạo bảng cho entity User
