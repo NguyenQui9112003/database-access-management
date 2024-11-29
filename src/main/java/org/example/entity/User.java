@@ -2,8 +2,9 @@ package org.example.entity;
 import org.example.annotations.*;
 
 @Entity
-@Table(name = "users_1")
+@Table(name = "users_1234")
 public class User {
+    @Id
     @Column(name = "id")
     private Long id;
 
@@ -11,7 +12,7 @@ public class User {
     private String name;
 
     @Column(name = "phone")
-    private String phone;
+    private int phone;
 
     // Getters and setters
     public Long getId() {
@@ -30,11 +31,11 @@ public class User {
         this.name = name;
     }
 
-    public String getPhone() {
+    public int getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public void setPhone(int phone) {
         this.phone = phone;
     }
 }
