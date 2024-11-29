@@ -1,6 +1,6 @@
 package org.example.repository;
 
-public interface QueryGeneratorFactory {
+public interface QueryGenerator {
     String createTableQuery(Class<?> clazz);
     // crud
 }
