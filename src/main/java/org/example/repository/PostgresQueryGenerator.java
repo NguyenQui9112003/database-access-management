@@ -2,7 +2,7 @@ package org.example.repository;
 import org.example.annotations.*;
 import java.lang.reflect.Field;
 
-public class PostgresQueryGeneratorConcrete implements QueryGeneratorFactory {
+public class PostgresQueryGenerator implements QueryGenerator {
     @Override
     public String createTableQuery(Class<?> clazz) {
         if (!clazz.isAnnotationPresent(Entity.class)) {

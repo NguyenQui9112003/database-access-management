@@ -3,9 +3,11 @@ import java.sql.Connection;
 
 import org.example.config.DatabaseConfig;
 import org.example.connection.PostgresConnectionFactory;
+import org.example.repository.DatabaseQueryAbstractFactory;
+import org.example.repository.PostgresQueryConcrete;
 import org.example.service.DatabaseService;
-import org.example.service.DatabaseServiceConcrete;
-import org.example.service.PostgresDatabaseService;
+import org.example.service.DatabaseServiceAbstractFactory;
+import org.example.service.PostgresConcrete;
 import org.example.entity.User;
 
 public class Main {
@@ -16,8 +18,9 @@ public class Main {
         Connection con = pgConnection.createConnection(dbConfig);
 
         // Tạo factory và service cho PostgreSQL
-        DatabaseServiceConcrete factory = new PostgresDatabaseService();
-        DatabaseService dbService = factory.createDatabaseService(con);
+        DatabaseServiceAbstractFactory db = new PostgresConcrete();
+        DatabaseQueryAbstractFactory query = new PostgresQueryConcrete();
+        DatabaseService dbService = db.createDatabaseService(con, query);
 
         // Tạo bảng cho entity User
         dbService.createTable(User.class);

@@ -1,8 +1,8 @@
 package org.example.repository;
 
-public class PostgresQueryConcrete extends DatabaseQueryFactory {
+public class PostgresQueryConcrete extends DatabaseQueryAbstractFactory {
     @Override
-    public QueryGeneratorFactory createQueryGenerator() {
-        return new PostgresQueryGeneratorConcrete();
+    public QueryGenerator createQueryGenerator() {
+        return new PostgresQueryGenerator();
     }
 }
