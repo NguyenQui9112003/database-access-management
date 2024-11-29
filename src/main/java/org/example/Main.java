@@ -19,7 +19,7 @@ public class Main {
         DatabaseServiceConcrete factory = new PostgresDatabaseServiceConcrete();
         DatabaseService dbService = factory.createDatabaseService(con);
 
-        // Tạo bảng cho entity User
+        // Tạo bảng cho entity User (Test)
         dbService.createTable(User.class);
         dbService.closeConnection(con);
     }
