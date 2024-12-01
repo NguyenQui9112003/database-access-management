@@ -28,29 +28,27 @@ public class ConnectionManagerSingleton {
     }
 
     // Cần một hàm để thêm connection vào trong cái Array
-    public boolean addConnection(Connection con) throws SQLException {
+    public Connection addConnection(Connection con) throws SQLException {
         // Kiểm tra vượt quá giới hạn chưa? Chưa thì thêm vào
         if (connectionArr.size() < maxConnection) {
             System.out.println("Adding connection to position " + connectionArr.size() + " in the manager");
             connectionArr.add(con);
             System.out.println("Added connection!");
-            return true;
+            return con;
         }
         // Còn nếu vượt giới hạn rồi thì kiểm xem có cái nào bị đóng không?
         // Có thì thế vào
         for (int i = 0; i < connectionArr.size(); i++) {
-            if (connectionArr.get(i).isClosed()) {
+            if (connectionArr.get(i) != null && connectionArr.get(i).isClosed()) {
                 System.out.println("Adding connection to position " + i + " in the manager");
                 connectionArr.set(i, con);
                 System.out.println("Added connection!");
-                return true;
+                return con;
             }
         }
 
         // Không thì báo đầy
         System.out.println("The manager is full.");
-        return false;
+        return null;
     }
-
-    // Cần một hàm để xóa connection vào trong cái queue
 }
