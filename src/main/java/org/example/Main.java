@@ -22,7 +22,7 @@ public class Main {
         DatabaseQueryAbstractFactory query = new PostgresQueryConcrete();
         DatabaseService dbService = db.createDatabaseService(con, query);
 
-        // Tạo bảng cho entity User
+        // Tạo bảng cho entity User (Test)
         dbService.createTable(User.class);
         dbService.closeConnection(con);
     }
