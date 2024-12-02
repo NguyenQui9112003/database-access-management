@@ -27,18 +27,27 @@ public class PostgresDatabaseService implements DatabaseService {
 
     @Override
     public void insert(Object entity) {
-
+        String insertQuery = queryGenerator.insertQuery(entity);
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(insertQuery);
+            System.out.println("Record inserted successfully");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     @Override
     public void update(Object entity) {
-
+        String updateQuery = queryGenerator.updateQuery(entity);
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(updateQuery);
+            System.out.println("Record updated successfully");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
-    @Override
-    public void delete(Object entity) {
-
-    }
+   
 
     @Override
     public void closeConnection (Connection con) {

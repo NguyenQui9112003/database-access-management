@@ -14,6 +14,13 @@ public class User {
     @Column(name = "phone")
     private int phone;
 
+    // constructor
+    public User(Long id, String name, int phone) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+    }
+
     // Getters and setters
     public Long getId() {
         return id;
@@ -38,4 +45,5 @@ public class User {
     public void setPhone(int phone) {
         this.phone = phone;
     }
+    
 }
