@@ -16,28 +16,33 @@ public class PostgresQueryGenerator implements QueryGenerator {
         boolean hasId = false;
 
         for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Column.class)) {
-                Column columnAnnotation = field.getAnnotation(Column.class);
-                createTableQuery.append(columnAnnotation.name()).append(" ");
-                // log field type and annotation
-                System.out.println("Field: " + field.getName() + ", Type: " + field.getType() + ", Annotation: " + columnAnnotation.name());
-                if (field.getName().equals("id")) {
-                    // Giả sử trường 'id' là khóa chính và tự tăng trong PostgreSQL
-                    createTableQuery.append("SERIAL PRIMARY KEY, ");
-                    hasId = true;
-                } else {
-                    // Nếu không phải id, chỉ cần thêm kiểu dữ liệu là VARCHAR (hoặc kiểu khác tùy theo field)
-                    createTableQuery.append("VARCHAR(255), ");
-                }
+            if (field.isAnnotationPresent(Id.class)) {
+                hasId = true;
+                break;
             }
         }
 
-        // Nếu không có 'id', thêm trường id mặc định
         if (!hasId) {
             createTableQuery.append("id SERIAL PRIMARY KEY, ");
         }
 
-        // Loại bỏ dấu phẩy cuối cùng và đóng dấu ngoặc
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.isAnnotationPresent(Column.class)) {
+                Column columnAnnotation = field.getAnnotation(Column.class);
+                String columnName = columnAnnotation.name();
+                String columnType = mapJavaTypeToPostgresType(field.getType());
+
+                createTableQuery.append(columnName).append(" ").append(columnType);
+
+                if (field.isAnnotationPresent(Id.class)) {
+                    createTableQuery.append(" PRIMARY KEY ");
+                    hasId = true;
+                }
+
+                createTableQuery.append(", ");
+            }
+        }
+
         createTableQuery.delete(createTableQuery.length() - 2, createTableQuery.length());
         createTableQuery.append(");");
 
@@ -122,4 +127,15 @@ public class PostgresQueryGenerator implements QueryGenerator {
         return updateQuery.toString();
     }
 
+    private String mapJavaTypeToPostgresType(Class<?> javaType) {
+        if (javaType == String.class) {
+            return "VARCHAR(255)";
+        } else if (javaType == Long.class) {
+            return "BIGINT";
+        } else if (javaType == Integer.class || javaType == int.class) {
+            return "INTEGER";
+        } else {
+            throw new RuntimeException("Unsupported type: " + javaType.getName());
+        }
+    }
 }

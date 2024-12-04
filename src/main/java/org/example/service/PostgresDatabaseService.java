@@ -47,8 +47,6 @@ public class PostgresDatabaseService implements DatabaseService {
         }
     }
 
-   
-
     @Override
     public void closeConnection (Connection con) {
         try {
