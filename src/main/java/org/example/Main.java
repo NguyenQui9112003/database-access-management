@@ -20,6 +20,7 @@ public class Main {
         DatabaseConfig dbConfig = new DatabaseConfig("jdbc:postgresql://localhost:5432",
                 "DAM-Framework","postgres","123456");
         PostgresConnectionFactory pgConnection = new PostgresConnectionFactory();
+
         // Từ factory này sẽ gọi một connection mới và kết nối vào trong database
         Connection con = connectionManagerSingleton.addConnection(pgConnection.createConnection(dbConfig));
         // Connection con = pgConnection.createConnection(dbConfig);
@@ -30,7 +31,7 @@ public class Main {
         DatabaseService dbService = db.createDatabaseService(con, query);
 
         // Tạo bảng cho entity User
-         dbService.createTable(User.class);
+        dbService.createTable(User.class);
 
         // dbService.insert()
         // dbService.update()
