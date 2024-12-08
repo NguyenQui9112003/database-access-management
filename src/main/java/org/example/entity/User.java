@@ -2,7 +2,7 @@ package org.example.entity;
 import org.example.annotations.*;
 
 @Entity
-@Table(name = "users_1")
+@Table(name = "users_test")
 public class User {
     @Id
     @Column(name = "id")
