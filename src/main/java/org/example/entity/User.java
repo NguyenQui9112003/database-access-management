@@ -2,10 +2,10 @@ package org.example.entity;
 import org.example.annotations.*;
 
 @Entity
-@Table(name = "users_test")
+@Table(name = "users") // Changed from users111 to users
 public class User {
     @Id
-    @Column(name = "id")
+    @Column(name = "id", primaryKey = true) // Add primaryKey attribute if available
     private Long id;
 
     @Column(name = "name")

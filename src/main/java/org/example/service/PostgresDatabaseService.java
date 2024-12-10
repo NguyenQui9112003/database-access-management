@@ -17,6 +17,7 @@ public class PostgresDatabaseService implements DatabaseService {
     @Override
     public void createTable(Class<?> entity) {
         String createTableQuery = queryGenerator.createTableQuery(entity);
+        System.out.println("Create Table SQL: " + createTableQuery); // Add logging
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(createTableQuery);
             System.out.println("Table created successfully");
@@ -24,10 +25,23 @@ public class PostgresDatabaseService implements DatabaseService {
             System.out.println(e);
         }
     }
+ 
+    @Override
+    public void updateByField(Class<?> entity, String fieldName, Object value) {
+        String updateQuery = queryGenerator.updateQueryByField(entity, fieldName, value);
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(updateQuery);
+            System.out.println("Record updated successfully");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        
+    }
 
     @Override
     public void insert(Object entity) {
         String insertQuery = queryGenerator.insertQuery(entity);
+        System.out.println("Insert SQL: " + insertQuery); // Add logging
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(insertQuery);
             System.out.println("Record inserted successfully");
@@ -42,6 +56,17 @@ public class PostgresDatabaseService implements DatabaseService {
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(updateQuery);
             System.out.println("Record updated successfully");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    @Override
+    public void updateFieldWithValue(Class<?> entity, String fieldNameToUpdate, Object newValue, String whereFieldName, Object whereValue) {
+        String updateQuery = queryGenerator.updateFieldWithValue(entity, fieldNameToUpdate, newValue, whereFieldName, whereValue);
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(updateQuery);
+            System.out.println("Field updated successfully");
         } catch (Exception e) {
             System.out.println(e);
         }
