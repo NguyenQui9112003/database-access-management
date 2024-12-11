@@ -2,10 +2,8 @@ package org.example.repository;
 
 import org.example.annotations.*;
 import org.example.builder.CreateTableBuilder;
-import org.example.builder.InsertQueryBuilder;
-import org.example.builder.UpdateQueryBuilder;
+import org.example.builder.UpdateQueryBuilderImpl;
 
-import java.io.Console;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +16,7 @@ public class PostgresQueryGenerator implements QueryGenerator {
         }
 
         String tableName = clazz.getAnnotation(Table.class).name();
-        CreateTableBuilder builder = new CreateTableBuilder();
-        builder.setTableName(tableName);
+        CreateTableBuilder builder = new CreateTableBuilder(tableName);
 
         for (Field field : clazz.getDeclaredFields()) {
             if (field.isAnnotationPresent(Id.class)) {
@@ -136,8 +133,8 @@ public class PostgresQueryGenerator implements QueryGenerator {
         }
 
         String tableName = clazz.getAnnotation(Table.class).name();
-        UpdateQueryBuilder builder = new UpdateQueryBuilder();
-        builder.setTableName(tableName);
+        UpdateQueryBuilderImpl builder = new UpdateQueryBuilderImpl();
+        builder.from(tableName);
 
         String idFieldName = null;
         String idValue = null;
@@ -163,7 +160,7 @@ public class PostgresQueryGenerator implements QueryGenerator {
         }
 
         if (idFieldName != null && idValue != null) {
-            builder.updateByField(idFieldName, idValue);
+            builder.set(idFieldName, idValue);
         } else {
             throw new RuntimeException("Entity must have an ID field");
         }
