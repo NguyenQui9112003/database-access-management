@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
+import org.example.builder.*;
 import org.example.config.DatabaseConfig;
 import org.example.connection.PostgresConnectionFactory;
 import org.example.repository.DatabaseQueryAbstractFactory;
@@ -37,6 +38,39 @@ public class Main {
         try {
             // Create table for User entity
             dbService.createTable(User.class);
+
+            // Test Create Table query
+            TableDefinitionBuilder createTableBuilder = new CreateTableBuilder("users")
+                    .addPrimaryKeyColumn("id", "SERIAL")
+                    .addColumn("name", "VARCHAR(100)")
+                    .addColumn("age", "INT");
+            System.out.println("Create Table Query:");
+            System.out.println(createTableBuilder.build());
+
+            // Test Select query
+            ConditionQueryBuilder selectBuilder = new SelectQueryBuilder()
+                    .from("users")
+                    .where("age > 18")
+                    .groupBy("age")
+                    .having("COUNT(*) > 1");
+            System.out.println("\nSelect Query:");
+            System.out.println(selectBuilder.build());
+
+            // Test Delete query
+            ConditionQueryBuilder deleteBuilder = new DeleteQueryBuilder()
+                    .from("users")
+                    .where("age < 18");
+            System.out.println("\nDelete Query:");
+            System.out.println(deleteBuilder.build());
+
+            // Test Update query
+            UpdateQueryBuilder updateBuilder = new UpdateQueryBuilderImpl()
+                    .from("users")
+                    .set("name", "'John'")
+                    .set("age", "30")
+                    .where("id = 1");
+            System.out.println("\nUpdate Query:");
+            System.out.println(updateBuilder.build());
 
             // Create users with different IDs - make sure ID and phone are different values
             User user1 = new User(4L, "John Doe", 555111); // ID=1, phone=555111
