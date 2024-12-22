@@ -1,4 +1,4 @@
-package org.example.builder;
+package org.example.repository.builder;
 
 public class CreateTableBuilder implements QueryBuilder {
     private final StringBuilder query;
