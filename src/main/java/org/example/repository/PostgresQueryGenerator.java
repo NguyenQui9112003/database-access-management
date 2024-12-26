@@ -1,124 +1,154 @@
 package org.example.repository;
-import org.example.annotations.*;
-import org.example.builder.CreateTableBuilder;
-import org.example.builder.QueryBuilder;
-
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.example.annotations.*;
+import org.example.repository.builder.QueryBuilder;
+import org.example.repository.builder.PostgresQueryBuilder;
 
 public class PostgresQueryGenerator implements QueryGenerator {
+    private final QueryBuilder queryBuilder = new PostgresQueryBuilder();
+
+    @Override
+    public QueryBuilder getQueryBuilder() {
+        return new PostgresQueryBuilder();
+    }
+
     @Override
     public String createTableQuery(Class<?> clazz) {
-        if (!clazz.isAnnotationPresent(Entity.class)) {
-            throw new RuntimeException("Class is not an entity");
-        }
-
         String tableName = clazz.getAnnotation(Table.class).name();
-        QueryBuilder builder = new CreateTableBuilder(tableName);
+        queryBuilder.createTable(tableName);
 
-        boolean hasId = false;
-
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Id.class)) {
-                Column columnAnnotation = field.getAnnotation(Column.class);
-                String columnName = columnAnnotation.name();
-                String columnType = mapJavaTypeToPostgresType(field.getType());
-                builder.addPrimaryKeyColumn(columnName, columnType);
-                hasId = true;
+        boolean firstColumn = true;
+        try {
+            for (Field field : clazz.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Id.class)) {
+                    if (!firstColumn) {
+                        queryBuilder.appendComma("");
+                    }
+                    String columnName = field.getAnnotation(Column.class).name();
+                    String columnType = mapJavaTypeToPostgresType(field.getType());
+                    queryBuilder.addPrimaryKeyColumn(columnName, columnType);
+                    firstColumn = false;
+                } else if (field.isAnnotationPresent(Column.class)) {
+                    if (!firstColumn) {
+                        queryBuilder.appendComma("");
+                    }
+                    String columnName = field.getAnnotation(Column.class).name();
+                    String columnType = mapJavaTypeToPostgresType(field.getType());
+                    queryBuilder.addColumn(columnName, columnType);
+                    firstColumn = false;
+                }
             }
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating create table query", e);
         }
-
-        if (!hasId) {
-            builder.addPrimaryKeyColumn("id", "SERIAL");
-        }
-
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(Id.class)) {
-                Column columnAnnotation = field.getAnnotation(Column.class);
-                String columnName = columnAnnotation.name();
-                String columnType = mapJavaTypeToPostgresType(field.getType());
-                builder.addColumn(columnName, columnType);
-            }
-        }
-
-        return builder.build();
+        queryBuilder.appendComma(");");
+        return queryBuilder.build();
     }
 
     @Override
     public String insertQuery(Object entity) {
         Class<?> clazz = entity.getClass();
-        if (!clazz.isAnnotationPresent(Entity.class)) {
-            throw new RuntimeException("Class is not an entity");
-        }
-
-        StringBuilder insertQuery = new StringBuilder();
         String tableName = clazz.getAnnotation(Table.class).name();
-        insertQuery.append("INSERT INTO ").append(tableName).append(" (");
+        List<String> columns = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
 
-        StringBuilder valuesPart = new StringBuilder("VALUES (");
-
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Column.class)) {
-                Column columnAnnotation = field.getAnnotation(Column.class);
-                insertQuery.append(columnAnnotation.name()).append(", ");
-                field.setAccessible(true);
-                try {
-                    valuesPart.append("'").append(field.get(entity)).append("', ");
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+        try {
+            for (Field field : clazz.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Column.class)) {
+                    field.setAccessible(true);
+                    String columnName = field.getAnnotation(Column.class).name();
+                    Object value = field.get(entity);
+                    columns.add(columnName);
+                    values.add(value);
                 }
             }
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating insert query", e);
         }
 
-        // Remove the last comma and space
-        insertQuery.delete(insertQuery.length() - 2, insertQuery.length());
-        valuesPart.delete(valuesPart.length() - 2, valuesPart.length());
+        return queryBuilder
+                .insert(tableName, columns.toArray(new String[0]))
+                .values(values.toArray())
+                .build();
+    }
 
-        insertQuery.append(") ").append(valuesPart).append(");");
+    @Override
+    public String updateFieldWithValue(Class<?> clazz, String fieldNameToUpdate,
+                                       Object newValue, String whereFieldName,
+                                       Object whereValue) {
+        String tableName = clazz.getAnnotation(Table.class).name();
+        String updateColumn = getColumnName(clazz, fieldNameToUpdate);
+        String whereColumn = getColumnName(clazz, whereFieldName);
 
-        return insertQuery.toString();
+        return queryBuilder
+                .update(tableName)
+                .set(updateColumn + "=" + (newValue instanceof String ? "'" + newValue + "'" : newValue))
+                .where(whereColumn + "=" + (whereValue instanceof String ? "'" + whereValue + "'" : whereValue))
+                .build();
     }
 
     @Override
     public String updateQuery(Object entity) {
         Class<?> clazz = entity.getClass();
+        String tableName = clazz.getAnnotation(Table.class).name();
+
+        String idColumn = null;
+        Object idValue = null;
+        List<String> setStatements = new ArrayList<>();
+
+        try {
+            for (Field field : clazz.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Column.class)) {
+                    field.setAccessible(true);
+                    String columnName = field.getAnnotation(Column.class).name();
+                    Object value = field.get(entity);
+
+                    if (field.isAnnotationPresent(Id.class)) {
+                        idColumn = columnName;
+                        idValue = value;
+                    } else {
+                        setStatements.add(columnName + "=" +
+                                (value instanceof String ? "'" + value + "'" : value));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating update query", e);
+        }
+
+        return queryBuilder
+                .update(tableName)
+                .set(setStatements.toArray(new String[0]))
+                .where(idColumn + "=" + (idValue instanceof String ? "'" + idValue + "'" : idValue))
+                .build();
+    }
+
+    @Override
+    public String updateQueryByField(Class<?> clazz, String fieldName, Object value) {
         if (!clazz.isAnnotationPresent(Entity.class)) {
             throw new RuntimeException("Class is not an entity");
         }
 
-        StringBuilder updateQuery = new StringBuilder();
         String tableName = clazz.getAnnotation(Table.class).name();
-        updateQuery.append("UPDATE ").append(tableName).append(" SET ");
+        List<String> setStatements = new ArrayList<>();
+        String whereColumn = getColumnName(clazz, fieldName);
 
-        String idColumnName = null;
-        Object idValue = null;
-
+        // Collect all non-ID fields to set to NULL
         for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Column.class)) {
-                Column columnAnnotation = field.getAnnotation(Column.class);
-                field.setAccessible(true);
-                try {
-                    if (field.getName().equals("id")) {
-                        idColumnName = columnAnnotation.name();
-                        idValue = field.get(entity);
-                    } else {
-                        updateQuery.append(columnAnnotation.name()).append(" = '").append(field.get(entity)).append("', ");
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+            if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(Id.class)) {
+                String columnName = field.getAnnotation(Column.class).name();
+                setStatements.add(columnName + " = NULL");
             }
         }
 
-        // Remove the last comma and space
-        updateQuery.delete(updateQuery.length() - 2, updateQuery.length());
-
-        if (idColumnName == null || idValue == null) {
-            throw new RuntimeException("Entity does not have an id field");
-        }
-
-        updateQuery.append(" WHERE ").append(idColumnName).append(" = '").append(idValue).append("';");
-
-        return updateQuery.toString();
+        return queryBuilder
+                .update(tableName)
+                .set(setStatements.toArray(new String[0]))
+                .where(whereColumn + "=" + (value instanceof String ? "'" + value + "'" : value))
+                .build();
     }
 
     private String mapJavaTypeToPostgresType(Class<?> javaType) {
@@ -150,4 +180,14 @@ public class PostgresQueryGenerator implements QueryGenerator {
             throw new RuntimeException("Unsupported type: " + javaType.getName());
         }
     }
+
+    private String getColumnName(Class<?> clazz, String fieldName) {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getName().equals(fieldName) && field.isAnnotationPresent(Column.class)) {
+                return field.getAnnotation(Column.class).name();
+            }
+        }
+        throw new RuntimeException("Field " + fieldName + " not found or not marked with @Column in class " + clazz.getName());
+    }
+
 }

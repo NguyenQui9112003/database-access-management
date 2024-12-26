@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SQLQueryBuilder implements QueryBuilder {
+public class PostgresQueryBuilder implements QueryBuilder {
     private StringBuilder query = new StringBuilder();
     private List<String> columns = new ArrayList<>();
     private List<Object> values = new ArrayList<>();

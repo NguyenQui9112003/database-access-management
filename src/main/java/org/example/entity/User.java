@@ -2,48 +2,51 @@ package org.example.entity;
 import org.example.annotations.*;
 
 @Entity
-@Table(name = "users_test")
+@Table(name = "users")
 public class User {
     @Id
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "username")
+    private String username;
 
-    @Column(name = "phone")
-    private int phone;
+    @Column(name = "email")
+    private String email;
 
-    // constructor
-    public User(Long id, String name, int phone) {
+    @Column(name = "age")
+    private Integer age;
+
+    // Constructor
+    public User(Long id, String username, String email, Integer age) {
         this.id = id;
-        this.name = name;
-        this.phone = phone;
+        this.username = username;
+        this.email = email;
+        this.age = age;
     }
 
     // Getters and setters
-    public Long getId() {
-        return id;
+    public String getUsername() {
+        return username;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getName() {
-        return name;
+    public String getEmail() {
+        return email;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public int getPhone() {
-        return phone;
+    public Integer getAge() {
+        return age;
     }
 
-    public void setPhone(int phone) {
-        this.phone = phone;
+    public void setAge(Integer age) {
+        this.age = age;
     }
-    
 }
