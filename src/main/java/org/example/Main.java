@@ -43,9 +43,46 @@ class User {
         this.age = age;
     }
 
-    // Getters and setters
+    // Auto-generated getters and setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    // Generic getter and setter using reflection
+    public Object get(String fieldName) throws Exception {
+        return this.getClass().getDeclaredField(fieldName).get(this);
+    }
+
+    public void set(String fieldName, Object value) throws Exception {
+        this.getClass().getDeclaredField(fieldName).set(this, value);
     }
 }
 
@@ -75,15 +112,15 @@ public class Main {
             statement = con.createStatement();
 
             // Create table
-            // try {
-            //     String createTableQuery = queryGenerator.createTableQuery(User.class);
-            //     System.out.println("Executing Create Table Query:");
-            //     System.out.println(createTableQuery);
-            //     statement.executeUpdate(createTableQuery);
-            //     System.out.println("Table created successfully\n");
-            // } catch (SQLException e) {
-            //     System.out.println("Create table failed: " + e.getMessage());
-            // }
+            try {
+                String createTableQuery = queryGenerator.createTableQuery(User.class);
+                System.out.println("Executing Create Table Query:");
+                System.out.println(createTableQuery);
+                statement.executeUpdate(createTableQuery);
+                System.out.println("Table and accessors created successfully\n");
+            } catch (SQLException e) {
+                System.out.println("Create table failed: " + e.getMessage());
+            }
 
             // // Insert first user
             // try {
@@ -133,6 +170,37 @@ public class Main {
                 System.out.println("Field updated successfully\n");
             } catch (SQLException e) {
                 System.out.println("Update field failed: " + e.getMessage());
+            }
+
+            // Create a new user
+            User user = new User(1L, "john_doe", "john@example.com", 25);
+
+            // Using standard getters
+            System.out.println("Using standard getters:");
+            System.out.println("ID: " + user.getId());
+            System.out.println("Username: " + user.getUsername());
+            System.out.println("Email: " + user.getEmail());
+            System.out.println("Age: " + user.getAge());
+
+            // Using generic getter (with reflection)
+            System.out.println("\nUsing generic getter:");
+            try {
+                System.out.println("Username: " + user.get("username"));
+                System.out.println("Email: " + user.get("email"));
+            } catch (Exception e) {
+                System.out.println("Error using generic getter: " + e.getMessage());
+            }
+
+            // Using standard setters
+            user.setUsername("jane_doe");
+            user.setEmail("jane@example.com");
+            
+            // Using generic setter (with reflection)
+            try {
+                user.set("age", 30);
+                System.out.println("\nAfter updates - Age: " + user.getAge());
+            } catch (Exception e) {
+                System.out.println("Error using generic setter: " + e.getMessage());
             }
 
           
