@@ -17,25 +17,13 @@ public class PostgresDatabaseService implements DatabaseService {
     @Override
     public void createTable(Class<?> entity) {
         String createTableQuery = queryGenerator.createTableQuery(entity);
-        System.out.println("Create Table SQL: " + createTableQuery); // Add logging
+        System.out.println("Create table SQL: " + createTableQuery); // Add logging
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(createTableQuery);
             System.out.println("Table created successfully");
         } catch (Exception e) {
             System.out.println(e);
         }
-    }
- 
-    @Override
-    public void updateByField(Class<?> entity, String fieldName, Object value) {
-        String updateQuery = queryGenerator.updateQueryByField(entity, fieldName, value);
-        try (Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate(updateQuery);
-            System.out.println("Record updated successfully");
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        
     }
 
     @Override
@@ -53,6 +41,19 @@ public class PostgresDatabaseService implements DatabaseService {
     @Override
     public void update(Object entity) {
         String updateQuery = queryGenerator.updateQuery(entity);
+        System.out.println("Update SQL: " + updateQuery);
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(updateQuery);
+            System.out.println("Record updated successfully");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    @Override
+    public void updateByField(Class<?> entity, String fieldName, Object value) {
+        String updateQuery = queryGenerator.updateQueryByField(entity, fieldName, value);
+        System.out.println("Update by field SQL: " + updateQuery);
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(updateQuery);
             System.out.println("Record updated successfully");
@@ -64,6 +65,7 @@ public class PostgresDatabaseService implements DatabaseService {
     @Override
     public void updateFieldWithValue(Class<?> entity, String fieldNameToUpdate, Object newValue, String whereFieldName, Object whereValue) {
         String updateQuery = queryGenerator.updateFieldWithValue(entity, fieldNameToUpdate, newValue, whereFieldName, whereValue);
+        System.out.println("Update field with value SQL: " + updateQuery);
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(updateQuery);
             System.out.println("Field updated successfully");
