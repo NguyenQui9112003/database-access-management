@@ -7,6 +7,9 @@ public interface QueryBuilder {
     QueryBuilder appendComma(String comma);
     QueryBuilder select(String... columns);
     QueryBuilder from(String table);
+    QueryBuilder groupBy(String... columns);
+    QueryBuilder having(String condition);
+    QueryBuilder delete();
     QueryBuilder where(String condition);
     QueryBuilder set(String... setColumns);
     QueryBuilder insert(String table, String... columns);

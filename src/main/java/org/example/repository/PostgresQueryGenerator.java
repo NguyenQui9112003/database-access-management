@@ -151,6 +151,48 @@ public class PostgresQueryGenerator implements QueryGenerator {
                 .build();
     }
 
+    @Override
+    public String selectQuery(Class<?> clazz, List<String> columns, String whereCondition, List<String> groupByColumns, String havingCondition) {
+        if (!clazz.isAnnotationPresent(Entity.class)) {
+            throw new RuntimeException("Class is not an entity");
+        }
+
+        String tableName = clazz.getAnnotation(Table.class).name();
+
+        queryBuilder.select(columns.toArray(new String[0])).from(tableName);
+
+        if (whereCondition != null && !whereCondition.isEmpty()) {
+            queryBuilder.where(whereCondition);
+        }
+
+        if (groupByColumns != null && !groupByColumns.isEmpty()) {
+            queryBuilder.groupBy(groupByColumns.toArray(new String[0]));
+        }
+
+        if (havingCondition != null && !havingCondition.isEmpty()) {
+            queryBuilder.having(havingCondition);
+        }
+
+        return queryBuilder.build();
+    }
+
+    @Override
+    public String deleteQuery(Class<?> clazz, String whereCondition) {
+        if (!clazz.isAnnotationPresent(Entity.class)) {
+            throw new RuntimeException("Class is not an entity");
+        }
+
+        String tableName = clazz.getAnnotation(Table.class).name();
+
+        queryBuilder.delete().from(tableName);
+
+        if (whereCondition != null && !whereCondition.isEmpty()) {
+            queryBuilder.where(whereCondition);
+        }
+
+        return queryBuilder.build();
+    }
+
     private String mapJavaTypeToPostgresType(Class<?> javaType) {
         if (javaType == String.class) {
             return "VARCHAR(255)";

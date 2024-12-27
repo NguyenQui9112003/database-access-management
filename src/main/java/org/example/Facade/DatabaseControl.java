@@ -2,11 +2,13 @@ package org.example.Facade;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.example.config.DatabaseConfig;
 import org.example.connection.ConnectionFactory;
 import org.example.connection.PostgresConnectionFactory;
 import org.example.connectionManager.ConnectionManagerSingleton;
+import org.example.entity.User;
 import org.example.service.*;
 import org.example.repository.*;
 
@@ -56,4 +58,8 @@ public class DatabaseControl {
     public void closeConnect() {
         dbService.closeConnection(con);
     }
+
+    public List<Object[]> select(Class<?> entity, List<String> columns, String whereCondition, List<String> groupByColumns, String havingCondition) { return dbService.select(entity, columns, whereCondition, groupByColumns, havingCondition);}
+
+    public void delete(Class<?> entity, String whereCondition) { dbService.delete(entity, whereCondition);}
 }

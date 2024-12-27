@@ -48,6 +48,26 @@ public class PostgresQueryBuilder implements QueryBuilder {
     }
 
     @Override
+    public QueryBuilder groupBy(String... columns) {
+        query.append(" GROUP BY ");
+        query.append(String.join(", ", columns));
+        return this;
+    }
+
+    @Override
+    public QueryBuilder having(String condition) {
+        query.append(" HAVING ").append(condition);
+        return this;
+    }
+
+    @Override
+    public QueryBuilder delete() {
+        query.append("DELETE ");
+        return this;
+    }
+
+
+    @Override
     public QueryBuilder from(String table) {
         query.append(" FROM ").append(table);
         return this;
