@@ -193,6 +193,68 @@ public class PostgresQueryGenerator implements QueryGenerator {
         return queryBuilder.build();
     }
 
+    public List<String> createRelationshipQueries(Class<?> clazz) {
+        List<String> relationshipQueries = new ArrayList<>();
+
+        try {
+            for (Field field : clazz.getDeclaredFields()) {
+                if (field.isAnnotationPresent(OneToOne.class)) {
+                    OneToOne oneToOne = field.getAnnotation(OneToOne.class);
+                    String foreignKeySQL = String.format(
+                            "ALTER TABLE %s ADD CONSTRAINT fk_%s FOREIGN KEY (%s) REFERENCES %s (%s);",
+                            clazz.getAnnotation(Table.class).name(),
+                            field.getName(),
+                            oneToOne.foreignKey(),
+                            oneToOne.referencedTable(),
+                            "id" // Assuming the referenced table uses "id" as the primary key
+                    );
+                    relationshipQueries.add(foreignKeySQL);
+                }
+
+                if (field.isAnnotationPresent(ManyToOne.class)) {
+                    ManyToOne manyToOne = field.getAnnotation(ManyToOne.class);
+                    String foreignKeySQL = String.format(
+                            "ALTER TABLE %s ADD CONSTRAINT fk_%s FOREIGN KEY (%s) REFERENCES %s (%s);",
+                            clazz.getAnnotation(Table.class).name(),
+                            field.getName(),
+                            manyToOne.foreignKey(),
+                            manyToOne.referencedTable(),
+                            "id" // Assuming the referenced table uses "id" as the primary key
+                    );
+                    relationshipQueries.add(foreignKeySQL);
+                }
+
+                if (field.isAnnotationPresent(OneToMany.class)) {
+                    // OneToMany relationships are typically handled on the ManyToOne side.
+                    System.out.println("One-to-Many relationships are derived from Many-to-One mappings.");
+                }
+
+                if (field.isAnnotationPresent(ManyToMany.class)) {
+                    ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
+                    String joinTableSQL = String.format(
+                            "CREATE TABLE %s (%s BIGINT, %s BIGINT, PRIMARY KEY (%s, %s), " +
+                                    "FOREIGN KEY (%s) REFERENCES %s (id), " +
+                                    "FOREIGN KEY (%s) REFERENCES %s (id));",
+                            manyToMany.joinTable(),
+                            manyToMany.joinColumn(),
+                            manyToMany.inverseJoinColumn(),
+                            manyToMany.joinColumn(),
+                            manyToMany.inverseJoinColumn(),
+                            manyToMany.joinColumn(),
+                            clazz.getAnnotation(Table.class).name(),
+                            manyToMany.inverseJoinColumn(),
+                            "id" // Assuming the inverse table uses "id" as the primary key
+                    );
+                    relationshipQueries.add(joinTableSQL);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating relationship queries", e);
+        }
+
+        return relationshipQueries;
+    }
+
     private String mapJavaTypeToPostgresType(Class<?> javaType) {
         if (javaType == String.class) {
             return "VARCHAR(255)";
