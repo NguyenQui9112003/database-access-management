@@ -1,8 +1,4 @@
 package org.example.repository;
-import org.example.annotations.*;
-import org.example.builder.CreateTableBuilder;
-import org.example.builder.QueryBuilder;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -153,6 +149,110 @@ public class PostgresQueryGenerator implements QueryGenerator {
                 .set(setStatements.toArray(new String[0]))
                 .where(whereColumn + "=" + (value instanceof String ? "'" + value + "'" : value))
                 .build();
+    }
+
+    @Override
+    public String selectQuery(Class<?> clazz, List<String> columns, String whereCondition, List<String> groupByColumns, String havingCondition) {
+        if (!clazz.isAnnotationPresent(Entity.class)) {
+            throw new RuntimeException("Class is not an entity");
+        }
+
+        String tableName = clazz.getAnnotation(Table.class).name();
+
+        queryBuilder.select(columns.toArray(new String[0])).from(tableName);
+
+        if (whereCondition != null && !whereCondition.isEmpty()) {
+            queryBuilder.where(whereCondition);
+        }
+
+        if (groupByColumns != null && !groupByColumns.isEmpty()) {
+            queryBuilder.groupBy(groupByColumns.toArray(new String[0]));
+        }
+
+        if (havingCondition != null && !havingCondition.isEmpty()) {
+            queryBuilder.having(havingCondition);
+        }
+
+        return queryBuilder.build();
+    }
+
+    @Override
+    public String deleteQuery(Class<?> clazz, String whereCondition) {
+        if (!clazz.isAnnotationPresent(Entity.class)) {
+            throw new RuntimeException("Class is not an entity");
+        }
+
+        String tableName = clazz.getAnnotation(Table.class).name();
+
+        queryBuilder.delete().from(tableName);
+
+        if (whereCondition != null && !whereCondition.isEmpty()) {
+            queryBuilder.where(whereCondition);
+        }
+
+        return queryBuilder.build();
+    }
+
+    public List<String> createRelationshipQueries(Class<?> clazz) {
+        List<String> relationshipQueries = new ArrayList<>();
+
+        try {
+            for (Field field : clazz.getDeclaredFields()) {
+                if (field.isAnnotationPresent(OneToOne.class)) {
+                    OneToOne oneToOne = field.getAnnotation(OneToOne.class);
+                    String foreignKeySQL = String.format(
+                            "ALTER TABLE %s ADD CONSTRAINT fk_%s FOREIGN KEY (%s) REFERENCES %s (%s);",
+                            clazz.getAnnotation(Table.class).name(),
+                            field.getName(),
+                            oneToOne.foreignKey(),
+                            oneToOne.referencedTable(),
+                            "id" // Assuming the referenced table uses "id" as the primary key
+                    );
+                    relationshipQueries.add(foreignKeySQL);
+                }
+
+                if (field.isAnnotationPresent(ManyToOne.class)) {
+                    ManyToOne manyToOne = field.getAnnotation(ManyToOne.class);
+                    String foreignKeySQL = String.format(
+                            "ALTER TABLE %s ADD CONSTRAINT fk_%s FOREIGN KEY (%s) REFERENCES %s (%s);",
+                            clazz.getAnnotation(Table.class).name(),
+                            field.getName(),
+                            manyToOne.foreignKey(),
+                            manyToOne.referencedTable(),
+                            "id" // Assuming the referenced table uses "id" as the primary key
+                    );
+                    relationshipQueries.add(foreignKeySQL);
+                }
+
+                if (field.isAnnotationPresent(OneToMany.class)) {
+                    // OneToMany relationships are typically handled on the ManyToOne side.
+                    System.out.println("One-to-Many relationships are derived from Many-to-One mappings.");
+                }
+
+                if (field.isAnnotationPresent(ManyToMany.class)) {
+                    ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
+                    String joinTableSQL = String.format(
+                            "CREATE TABLE %s (%s BIGINT, %s BIGINT, PRIMARY KEY (%s, %s), " +
+                                    "FOREIGN KEY (%s) REFERENCES %s (id), " +
+                                    "FOREIGN KEY (%s) REFERENCES %s (id));",
+                            manyToMany.joinTable(),
+                            manyToMany.joinColumn(),
+                            manyToMany.inverseJoinColumn(),
+                            manyToMany.joinColumn(),
+                            manyToMany.inverseJoinColumn(),
+                            manyToMany.joinColumn(),
+                            clazz.getAnnotation(Table.class).name(),
+                            manyToMany.inverseJoinColumn(),
+                            "id" // Assuming the inverse table uses "id" as the primary key
+                    );
+                    relationshipQueries.add(joinTableSQL);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating relationship queries", e);
+        }
+
+        return relationshipQueries;
     }
 
     private String mapJavaTypeToPostgresType(Class<?> javaType) {

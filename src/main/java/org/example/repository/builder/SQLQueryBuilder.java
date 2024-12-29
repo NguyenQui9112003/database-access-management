@@ -29,6 +29,12 @@ public class SQLQueryBuilder implements QueryBuilder {
     }
 
     @Override
+    public QueryBuilder delete() {
+        query.append("DELETE ");
+        return this;
+    }
+
+    @Override
     public QueryBuilder set(String... setColumns) {
         query.append(" SET ");
         query.append(String.join(", ", setColumns));
