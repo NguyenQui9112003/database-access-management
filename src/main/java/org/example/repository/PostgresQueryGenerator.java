@@ -236,6 +236,55 @@ public class PostgresQueryGenerator implements QueryGenerator {
         return relationshipQueries;
     }
 
+    @Override
+    public String insertBulkQuery(List<Object> entities) {
+        if (entities == null || entities.isEmpty()) {
+            throw new IllegalArgumentException("Entities list cannot be empty");
+        }
+
+        Object firstEntity = entities.get(0);
+        Class<?> entityClass = firstEntity.getClass();
+        String tableName = entityClass.getSimpleName().toLowerCase();
+        Field[] fields = entityClass.getDeclaredFields();
+
+        StringBuilder query = new StringBuilder("INSERT INTO ")
+            .append(tableName)
+            .append(" (");
+
+        // Append column names
+        for (int i = 0; i < fields.length; i++) {
+            if (i > 0) query.append(", ");
+            query.append(fields[i].getName().toLowerCase());
+        }
+
+        query.append(") VALUES ");
+
+        // Append values for each entity
+        for (int i = 0; i < entities.size(); i++) {
+            if (i > 0) query.append(", ");
+            query.append("(");
+            
+            Object entity = entities.get(i);
+            for (int j = 0; j < fields.length; j++) {
+                if (j > 0) query.append(", ");
+                try {
+                    fields[j].setAccessible(true);
+                    Object value = fields[j].get(entity);
+                    if (value instanceof String) {
+                        query.append("'").append(value).append("'");
+                    } else {
+                        query.append(value);
+                    }
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Error accessing field: " + fields[j].getName(), e);
+                }
+            }
+            query.append(")");
+        }
+
+        return query.toString();
+    }
+
     private String mapJavaTypeToPostgresType(Class<?> javaType) {
         if (javaType == String.class) {
             return "VARCHAR(255)";

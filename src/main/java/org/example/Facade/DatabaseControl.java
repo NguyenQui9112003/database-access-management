@@ -6,9 +6,10 @@ import java.util.List;
 
 import org.example.config.DatabaseConfig;
 import org.example.connection.ConnectionFactory;
+import org.example.connection.MySQLConnectionFactory;
 import org.example.connection.PostgresConnectionFactory;
 import org.example.connectionManager.ConnectionManagerSingleton;
-import org.example.entity.User;
+
 import org.example.service.*;
 import org.example.repository.*;
 
@@ -30,7 +31,23 @@ public class DatabaseControl {
             DatabaseQueryAbstractFactory queryFactory = new PostgresQueryConcrete();
             // create Postgres Facade
             this.dbService = dbFactory.createDatabaseService(con, queryFactory);
-        } else {
+        } 
+        else if ("mysql".equalsIgnoreCase(dbType)) {
+            // create Manager connection
+            ConnectionManagerSingleton connectionManagerSingleton = ConnectionManagerSingleton.getInstance(10);
+            // create MySQL connection
+            ConnectionFactory mysqlConnection = new MySQLConnectionFactory();
+            // Từ factory này sẽ gọi một connection mới và kết nối vào trong database
+            con = connectionManagerSingleton.addConnection(mysqlConnection.createConnection(dbConfig));
+            // create MySQL service
+            DatabaseServiceAbstractFactory dbFactory = new MySQLConcrete();
+            // create MySQL query
+            DatabaseQueryAbstractFactory queryFactory = new MySQLQueryConcrete();
+            // create MySQL Facade
+            this.dbService = dbFactory.createDatabaseService(con, queryFactory);
+        }
+        
+        else {
             throw new IllegalArgumentException("System does not support database: " + dbType);
         }
     }
@@ -41,6 +58,12 @@ public class DatabaseControl {
 
     public void insert(Object entity) {
         dbService.insert(entity);
+    }
+
+    public void insertBulk(List<?> entities) {
+        for (Object entity : entities) {
+            dbService.insert(entity);
+        }
     }
 
     public void update(Object entity) {

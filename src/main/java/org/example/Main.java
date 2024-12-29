@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.Facade.DatabaseControl;
 import org.example.config.DatabaseConfig;
+import org.example.config.PostgresToMySQLAdapter;
 import org.example.entity.Profile;
 import org.example.entity.User;
 
@@ -10,18 +11,58 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        DatabaseConfig dbConfig = new DatabaseConfig (
-                "jdbc:postgresql://localhost:5432",
-                "DAM-Framework",
-                "postgres",
-                "123456");
+        // Original PostgreSQL config
+        // DatabaseConfig postgresConfig = new DatabaseConfig(
+        //         "jdbc:postgresql://localhost:5432",
+        //         "DAM-Framework",
+        //         "postgres",
+        //         "123456");
+
+        DatabaseConfig postgresConfig = new DatabaseConfig(
+            "jdbc:postgresql://localhost:5432",
+            "testDB",
+            "postgres",
+            "123");
+
+        // Adapter to convert PostgreSQL config to MySQL config
+        // PostgresToMySQLAdapter adapter = new PostgresToMySQLAdapter(postgresConfig);
+        // DatabaseConfig mysqlConfig = new DatabaseConfig(
+        //         "jdbc:mysql://localhost:3306",
+        //         "user",
+        //        "root",
+        //         adapter.getPassword());
+
 
         // create service PostgresSQL with Facade
         try {
-            DatabaseControl db = new DatabaseControl(dbConfig, "postgres");
+            DatabaseControl db = new DatabaseControl(postgresConfig, "postgres");
+            // create table
             db.createTable(User.class);
+            // Example usage
+            List<User> users = Arrays.asList(
+                new User(1L, "Alice", "thai123@mgial.com", 20),
+                new User(2L, "Bob", "thai222@gmail.com", 21)
+              
+            );
+            
+          
 
-            // insert
+            db.insertBulk(users);
+            //db.createTable(User.class);
+            //DatabaseControl db = new DatabaseControl(mysqlConfig, "mysql");
+            //db.createTable(User.class);
+            // insert User
+            // User user = new User(1L, "Duy", "thai@gmail.com", 21);
+            //db.insert(user);
+            // user.setAge(22);
+            // db.update(user);
+            // console log sqlstatement
+            // user = new User(2L, "thai", "thai123cm@gmail.com", 22);
+            // db.insert(user);
+            // // insert
+            // db update
+            // user.setAge(23);
+            // db.update(user);
             // User user_test = new User(4L, "Haha haha", "qui@gmail.com", 13);
             // db.insert(user_test);
 

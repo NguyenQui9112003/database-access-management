@@ -44,6 +44,23 @@ public class PostgresDatabaseService implements DatabaseService {
     }
 
     @Override
+    public void insertBulk(List<Object> entities) {
+        if (entities == null || entities.isEmpty()) {
+            return;
+        }
+        
+        String insertQuery = queryGenerator.insertBulkQuery(entities);
+        System.out.println("Bulk Insert SQL: " + insertQuery);
+        
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(insertQuery);
+            System.out.println(entities.size() + " records inserted successfully");
+        } catch (Exception e) {
+            System.out.println("Error in bulk insert: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void update(Object entity) {
         String updateQuery = queryGenerator.updateQuery(entity);
         System.out.println("Update SQL: " + updateQuery);
