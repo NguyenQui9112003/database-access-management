@@ -25,7 +25,7 @@ public class PostgresDatabaseService implements DatabaseService {
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(createTableQuery);
             System.out.println("Table created successfully");
-            createRelationships(entity);
+//            createRelationships(entity);
         } catch (Exception e) {
             System.out.println(e);
         }

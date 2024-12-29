@@ -15,7 +15,7 @@ public class Profile {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @OneToOne(referencedTable = "users", foreignKey = "user_id")
+    @OneToOne(referencedTable = "users", foreignKey = "id")
     private User user;
 
     // Constructor

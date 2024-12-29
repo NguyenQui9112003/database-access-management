@@ -228,25 +228,6 @@ public class PostgresQueryGenerator implements QueryGenerator {
                     // OneToMany relationships are typically handled on the ManyToOne side.
                     System.out.println("One-to-Many relationships are derived from Many-to-One mappings.");
                 }
-
-                if (field.isAnnotationPresent(ManyToMany.class)) {
-                    ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
-                    String joinTableSQL = String.format(
-                            "CREATE TABLE %s (%s BIGINT, %s BIGINT, PRIMARY KEY (%s, %s), " +
-                                    "FOREIGN KEY (%s) REFERENCES %s (id), " +
-                                    "FOREIGN KEY (%s) REFERENCES %s (id));",
-                            manyToMany.joinTable(),
-                            manyToMany.joinColumn(),
-                            manyToMany.inverseJoinColumn(),
-                            manyToMany.joinColumn(),
-                            manyToMany.inverseJoinColumn(),
-                            manyToMany.joinColumn(),
-                            clazz.getAnnotation(Table.class).name(),
-                            manyToMany.inverseJoinColumn(),
-                            "id" // Assuming the inverse table uses "id" as the primary key
-                    );
-                    relationshipQueries.add(joinTableSQL);
-                }
             }
         } catch (Exception e) {
             throw new RuntimeException("Error creating relationship queries", e);

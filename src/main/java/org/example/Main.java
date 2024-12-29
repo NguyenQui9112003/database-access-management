@@ -2,12 +2,9 @@ package org.example;
 
 import org.example.Facade.DatabaseControl;
 import org.example.config.DatabaseConfig;
+import org.example.entity.Profile;
 import org.example.entity.User;
-import org.example.repository.builder.QueryBuilder;
-import org.example.repository.builder.SQLQueryBuilder;
 
-import java.beans.Statement;
-import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,36 +31,36 @@ public class Main {
             // db.updateFieldWithValue();
 
             // select having group by (DUY)
-            System.out.println("Selecting records...");
-            List<Object[]> results = db.select(
-                    User.class,
-                    List.of("id", "name", "age"),
-                    "age > 20",         // WHERE condition
-                    List.of("age"),     // GROUP BY
-                    "COUNT(*) >= 1"     // HAVING condition
-            );
-
-            for (Object[] row : results) {
-                System.out.println(Arrays.toString(row));
-            }
+//            System.out.println("Selecting records...");
+//            List<Object[]> results = db.select(
+//                    User.class,
+//                    List.of("id", "username", "age"),
+//                    "age > 20",         // WHERE condition
+//                    List.of("id", "username", "age"),     // GROUP BY
+//                    "COUNT(*) >= 1"     // HAVING condition
+//            );
+//
+//            for (Object[] row : results) {
+//                System.out.println(Arrays.toString(row));
+//            }
 
             //delete
-            System.out.println("Deleting a record...");
-            db.delete(User.class, "id = 2");
+//            System.out.println("Deleting a record...");
+//            db.delete(User.class, "id = 2");
 
             // Re-select to verify deletion
-            System.out.println("Selecting records after deletion...");
-            results = db.select(
-                    User.class,
-                    List.of("id", "name", "age"),
-                    null,               // No WHERE condition
-                    null,               // No GROUP BY
-                    null                // No HAVING condition
-            );
+//            System.out.println("Selecting records after deletion...");
+//            List<Object[]> results = db.select(
+//                    User.class,
+//                    List.of("id", "username", "age"),
+//                    null,               // No WHERE condition
+//                    null,               // No GROUP BY
+//                    null                // No HAVING condition
+//            );
 
-            for (Object[] row : results) {
-                System.out.println(Arrays.toString(row));
-            }
+//            for (Object[] row : results) {
+//                System.out.println(Arrays.toString(row));
+//            }
 
             db.closeConnect();
         } catch (IllegalArgumentException e) {
