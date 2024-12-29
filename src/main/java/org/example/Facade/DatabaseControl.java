@@ -47,6 +47,8 @@ public class DatabaseControl {
         dbService.update(entity);
     }
 
+    public void createRelationships(Class<?> entity) {dbService.createRelationships(entity);}
+
     public void updateByField(Class<?> entity, String fieldName, Object value) {
         dbService.updateByField(entity, fieldName, value);
     }

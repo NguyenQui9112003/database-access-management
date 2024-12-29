@@ -3,6 +3,7 @@ package org.example;
 import org.example.Facade.DatabaseControl;
 import org.example.config.DatabaseConfig;
 import org.example.entity.Profile;
+import org.example.entity.Stories;
 import org.example.entity.User;
 
 import java.util.Arrays;
@@ -20,6 +21,12 @@ public class Main {
         try {
             DatabaseControl db = new DatabaseControl(dbConfig, "postgres");
             db.createTable(User.class);
+            db.createTable(Profile.class);
+            db.createTable(Stories.class);
+
+            db.createRelationships(User.class);
+            db.createRelationships(Profile.class);
+            db.createRelationships(Stories.class);
 
             // insert
             // User user_test = new User(4L, "Haha haha", "qui@gmail.com", 13);
