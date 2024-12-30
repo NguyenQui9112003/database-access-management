@@ -1,7 +1,6 @@
 package org.example.repository;
 
 import org.example.repository.builder.QueryBuilder;
-
 import java.util.List;
 
 public interface QueryGenerator {
@@ -14,6 +13,5 @@ public interface QueryGenerator {
     String updateQueryByField(Class<?> clazz, String fieldName, Object value);
     String updateFieldWithValue(Class<?> clazz, String fieldNameToUpdate, Object newValue, String whereFieldName, Object whereValue);
     // Get query builder instance
-    QueryBuilder getQueryBuilder();
     String insertBulkQuery(List<Object> entities);
 }

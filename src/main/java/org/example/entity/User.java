@@ -1,8 +1,7 @@
 package org.example.entity;
 
-import org.example.annotations.*;
-
 import java.util.List;
+import org.example.annotations.*;
 
 @Entity
 @Table(name = "users")
@@ -20,11 +19,11 @@ public class User {
     @Column(name = "age")
     private Integer age;
 
-//    @OneToOne(referencedTable = "profiles", foreignKey = "profile_id")
-//    private Profile profile;
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<Stories> stories;
+    @OneToOne(referencedTable = "profiles", foreignKey = "id")
+    private Profile profile;
+
+    @OneToMany(mappedBy = "user")
+    private List<Stories> stories;
 
     // Constructor
     public User(Long id, String username, String email, Integer age) {
@@ -67,19 +66,19 @@ public class User {
         this.age = age;
     }
 
-//    public Profile getProfile() {
-//        return profile;
-//    }
-//
-//    public void setProfile(Profile profile) {
-//        this.profile = profile;
-//    }
-//
-//    public List<Stories> getStories() {
-//        return stories;
-//    }
-//
-//    public void setStories(List<Stories> stories) {
-//        this.stories = stories;
-//    }
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public List<Stories> getStories() {
+        return stories;
+    }
+
+    public void setStories(List<Stories> stories) {
+        this.stories = stories;
+    }
 }

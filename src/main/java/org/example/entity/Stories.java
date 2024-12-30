@@ -15,7 +15,7 @@ public class Stories {
     @Column(name = "content")
     private String content;
 
-    @ManyToOne(referencedTable = "users", foreignKey = "user_id")
+    @ManyToOne(referencedTable = "users", foreignKey = "id")
     private User user;
 
     // Constructor

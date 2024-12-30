@@ -1,27 +1,29 @@
 package org.example;
 
-import org.example.Facade.DatabaseControl;
-import org.example.config.DatabaseConfig;
-import org.example.entity.Profile;
-import org.example.entity.User;
-
 import java.util.Arrays;
 import java.util.List;
+
+import org.example.Facade.DatabaseControl;
+import org.example.config.DatabaseConfig;
+
+import org.example.entity.Profile;
+import org.example.entity.User;
+import org.example.entity.Stories;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         // Original PostgreSQL config
-        // DatabaseConfig postgresConfig = new DatabaseConfig(
-        //         "jdbc:postgresql://localhost:5432",
-        //         "DAM-Framework",
-        //         "postgres",
-        //         "123456");
+         DatabaseConfig postgresConfig = new DatabaseConfig(
+                 "jdbc:postgresql://localhost:5432",
+                 "DAM-Framework",
+                 "postgres",
+                 "123456");
 
-        DatabaseConfig postgresConfig = new DatabaseConfig(
-            "jdbc:postgresql://localhost:5432",
-            "testDB",
-            "postgres",
-            "123");
+//        DatabaseConfig postgresConfig = new DatabaseConfig(
+//            "jdbc:postgresql://localhost:5432",
+//            "testDB",
+//            "postgres",
+//            "123");
 
         // Adapter to convert PostgreSQL config to MySQL config
         // PostgresToMySQLAdapter adapter = new PostgresToMySQLAdapter(postgresConfig);
@@ -34,24 +36,26 @@ public class Main {
 
         // create service PostgresSQL with Facade
         try {
-            DatabaseControl db = new DatabaseControl(dbConfig, "postgres");
+            DatabaseControl db = new DatabaseControl(postgresConfig, "postgres");
+
+            // create table relation
             db.createTable(User.class);
-            // Example usage
-            List<User> users = Arrays.asList(
-                new User(1L, "Alice", "thai123@mgial.com", 20),
-                new User(2L, "Bob", "thai222@gmail.com", 21)
+//            db.createTable(Profile.class);
+//            db.createTable(Stories.class);
 
-            );
+//            db.createRelationships(User.class);
+//            db.createRelationships(Profile.class);
+//            db.createRelationships(Stories.class);
+
+//            // Example usage
+//            List<User> users = Arrays.asList(
+//                new User(1L, "Alice", "thai123@mgial.com", 20),
+//                new User(2L, "Bob", "thai222@gmail.com", 21)
+//
+//            );
 
 
-            db.createTable(Profile.class);
-            db.createTable(Stories.class);
-
-            db.createRelationships(User.class);
-            db.createRelationships(Profile.class);
-            db.createRelationships(Stories.class);
-
-            db.insertBulk(users);
+//            db.insertBulk(users);
             //db.createTable(User.class);
             //DatabaseControl db = new DatabaseControl(mysqlConfig, "mysql");
             //db.createTable(User.class);

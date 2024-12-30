@@ -5,15 +5,10 @@ import java.util.List;
 
 import org.example.annotations.*;
 import org.example.repository.builder.QueryBuilder;
-import org.example.repository.builder.PostgresQueryBuilder;
+import org.example.repository.builder.SQLQueryBuilder;
 
 public class PostgresQueryGenerator implements QueryGenerator {
-    private final QueryBuilder queryBuilder = new PostgresQueryBuilder();
-
-    @Override
-    public QueryBuilder getQueryBuilder() {
-        return new PostgresQueryBuilder();
-    }
+    private final QueryBuilder queryBuilder = new SQLQueryBuilder();
 
     @Override
     public String createTableQuery(Class<?> clazz) {
