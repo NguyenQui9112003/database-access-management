@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.Facade.DatabaseControl;
 import org.example.config.DatabaseConfig;
-import org.example.config.PostgresToMySQLAdapter;
 import org.example.entity.Profile;
 import org.example.entity.User;
 
@@ -35,17 +34,22 @@ public class Main {
 
         // create service PostgresSQL with Facade
         try {
-            DatabaseControl db = new DatabaseControl(postgresConfig, "postgres");
-            // create table
+            DatabaseControl db = new DatabaseControl(dbConfig, "postgres");
             db.createTable(User.class);
             // Example usage
             List<User> users = Arrays.asList(
                 new User(1L, "Alice", "thai123@mgial.com", 20),
                 new User(2L, "Bob", "thai222@gmail.com", 21)
-              
+
             );
-            
-          
+
+
+            db.createTable(Profile.class);
+            db.createTable(Stories.class);
+
+            db.createRelationships(User.class);
+            db.createRelationships(Profile.class);
+            db.createRelationships(Stories.class);
 
             db.insertBulk(users);
             //db.createTable(User.class);
