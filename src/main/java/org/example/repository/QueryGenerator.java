@@ -14,4 +14,6 @@ public interface QueryGenerator {
     String updateFieldWithValue(Class<?> clazz, String fieldNameToUpdate, Object newValue, String whereFieldName, Object whereValue);
     // Get query builder instance
     String insertBulkQuery(List<Object> entities);
+    
+    <T> String selectByIdQuery(Class<T> entityClass, Object id);
 }

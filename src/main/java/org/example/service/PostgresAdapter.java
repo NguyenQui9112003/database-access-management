@@ -16,12 +16,9 @@ public class PostgresAdapter implements DatabaseService {
         postgresService.createTable(entity);
     }
 
-    
-
     @Override
     public void insertBulk(List<Object> entities) {
         postgresService.insertBulk(entities);
-        
     }
 
     @Override
@@ -64,5 +61,44 @@ public class PostgresAdapter implements DatabaseService {
     @Override
     public void closeConnection(Connection con) {
         postgresService.closeConnection(con);
+    }
+
+    @Override
+    public <T> boolean delete(T entity) {
+        try {
+            return postgresService.delete(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public <T> T get(Class<T> entityClass, Object id) {
+        try {
+            return postgresService.get(entityClass, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public <T> boolean save(T entity) {
+        try {
+            return postgresService.save(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public <T> void set(Class<T> entityClass, Object id, String field, Object value) {
+        try {
+            postgresService.set(entityClass, id, field, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

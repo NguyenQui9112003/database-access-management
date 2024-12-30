@@ -8,7 +8,7 @@ import org.example.annotations.*;
 public class User {
     @Id
     @Column(name = "id", primaryKey = true)
-    private Long id;
+    private Long id; // Make sure this matches the column name in database
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -24,6 +24,11 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Stories> stories;
+
+    // Add no-argument constructor
+    public User() {
+        // Default constructor required for reflection
+    }
 
     // Constructor
     public User(Long id, String username, String email, Integer age) {
@@ -80,5 +85,15 @@ public class User {
 
     public void setStories(List<Stories> stories) {
         this.stories = stories;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+               "id=" + id +
+               ", username='" + username + '\'' +
+               ", email='" + email + '\'' +
+               ", age=" + age +
+               '}';
     }
 }

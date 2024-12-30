@@ -87,4 +87,20 @@ public class DatabaseControl {
     public List<Object[]> select(Class<?> entity, List<String> columns, String whereCondition, List<String> groupByColumns, String havingCondition) { return dbService.select(entity, columns, whereCondition, groupByColumns, havingCondition);}
 
     public void delete(Class<?> entity, String whereCondition) { dbService.delete(entity, whereCondition);}
+
+    public <T> T get(Class<T> entityClass, Object id) {
+        return dbService.get(entityClass, id);
+    }
+
+    public <T> void set(Class<T> entityClass, Object id, String field, Object value) {
+        dbService.set(entityClass, id, field, value);
+    }
+
+    public <T> boolean save(T entity) {
+        return dbService.save(entity);
+    }
+    
+    public <T> boolean delete(T entity) {
+        return dbService.delete(entity);
+    }
 }

@@ -13,17 +13,17 @@ import org.example.entity.Stories;
 public class Main {
     public static void main(String[] args) throws Exception {
         // Original PostgreSQL config
-         DatabaseConfig postgresConfig = new DatabaseConfig(
-                 "jdbc:postgresql://localhost:5432",
-                 "DAM-Framework",
-                 "postgres",
-                 "123456");
+        //  DatabaseConfig postgresConfig = new DatabaseConfig(
+        //          "jdbc:postgresql://localhost:5432",
+        //          "DAM-Framework",
+        //          "postgres",
+        //          "123456");
 
-//        DatabaseConfig postgresConfig = new DatabaseConfig(
-//            "jdbc:postgresql://localhost:5432",
-//            "testDB",
-//            "postgres",
-//            "123");
+       DatabaseConfig postgresConfig = new DatabaseConfig(
+           "jdbc:postgresql://localhost:5432",
+           "testDB",
+           "postgres",
+           "123");
 
         // Adapter to convert PostgreSQL config to MySQL config
         // PostgresToMySQLAdapter adapter = new PostgresToMySQLAdapter(postgresConfig);
@@ -39,7 +39,21 @@ public class Main {
             DatabaseControl db = new DatabaseControl(postgresConfig, "postgres");
 
             // create table relation
-            db.createTable(User.class);
+            //db.createTable(User.class);
+            User user = db.get(User.class, 1L);
+            if (user != null) {
+                System.out.println(user);
+                db.set(User.class, user.getId(), "age", 25);
+                user = db.get(User.class, 1L);
+                System.out.println(user);
+                user.setAge(26);
+                db.save(user);
+                user = db.get(User.class, 1L);
+                System.out.println(user);
+                db.delete(user);
+                user = db.get(User.class, 1L);
+                System.out.println(user);
+            }
 //            db.createTable(Profile.class);
 //            db.createTable(Stories.class);
 

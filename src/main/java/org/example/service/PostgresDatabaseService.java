@@ -1,14 +1,20 @@
 package org.example.service;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.example.annotations.OneToMany;
+import org.example.annotations.OneToOne;
 import org.example.repository.DatabaseQueryAbstractFactory;
 import org.example.repository.PostgresQueryGenerator;
 import org.example.repository.QueryGenerator;
+
+import org.example.annotations.Column;  // Update this import
 
 public class PostgresDatabaseService implements DatabaseService {
     private Connection connection;
@@ -21,13 +27,20 @@ public class PostgresDatabaseService implements DatabaseService {
 
     @Override
     public void createTable(Class<?> entity) {
-        String createTableQuery = queryGenerator.createTableQuery(entity);
-        System.out.println("Create table SQL: " + createTableQuery); // Add logging
-        try (Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate(createTableQuery);
-            System.out.println("Table created successfully");
+        try {
+            // Add IF NOT EXISTS to prevent errors if table already exists
+            String createTableQuery = queryGenerator.createTableQuery(entity).replace(
+                "CREATE TABLE", 
+                "CREATE TABLE IF NOT EXISTS"
+            );
+            System.out.println("Create table SQL: " + createTableQuery);
+            
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(createTableQuery);
+                System.out.println("Table created/verified successfully");
+            }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("Error creating table: " + e.getMessage());
         }
     }
 
@@ -152,6 +165,113 @@ public class PostgresDatabaseService implements DatabaseService {
             }
         } catch (Exception e) {
             System.out.println(e);
+        }
+    }
+
+    @Override
+    public <T> boolean delete(T entity) {
+        try {
+            String deleteQuery = queryGenerator.deleteQuery(entity.getClass(), null);
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(deleteQuery);
+                System.out.println("Record deleted successfully");
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println("Error deleting record: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public <T> T get(Class<T> entityClass, Object id) {
+        try {
+            String selectQuery = queryGenerator.selectByIdQuery(entityClass, id);
+            System.out.println("Executing SQL: " + selectQuery);
+            
+            try (Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery(selectQuery)) {
+                
+                if (rs.next()) {
+                    T entity = entityClass.getDeclaredConstructor().newInstance();
+                    for (Field field : entityClass.getDeclaredFields()) {
+                        field.setAccessible(true);
+                        
+                        // Skip relationship fields
+                        if (field.isAnnotationPresent(OneToOne.class) || 
+                            field.isAnnotationPresent(OneToMany.class)) {
+                            continue;
+                        }
+                        
+                        String columnName = field.getName();
+                        if (field.isAnnotationPresent(Column.class)) {
+                            Column column = field.getAnnotation(Column.class);
+                            String name = column.name();
+                            if (name != null && !name.isEmpty()) {
+                                columnName = name;
+                            }
+                        }
+                        
+                        Object value = rs.getObject(columnName.toLowerCase());
+                        if (value != null) {
+                            field.set(entity, value);
+                        }
+                    }
+                    return entity;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error in get() method: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public <T> boolean save(T entity) {
+        try {
+            Class<?> entityClass = entity.getClass();
+            Field idField = entityClass.getDeclaredField("id");
+            idField.setAccessible(true);
+            Object id = idField.get(entity);
+
+            String query;
+            if (id == null) {
+                query = queryGenerator.insertQuery(entity);
+            } else {
+                query = queryGenerator.updateQuery(entity);
+            }
+            
+            System.out.println("Save SQL: " + query);
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(query);
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println("Error in save() method: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public <T> void set(Class<T> entityClass, Object id, String field, Object value) {
+        try {
+            String updateQuery = queryGenerator.updateFieldWithValue(
+                entityClass,
+                field,
+                value,
+                "id",
+                id
+            );
+            System.out.println("Set SQL: " + updateQuery);
+            
+            try (Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate(updateQuery);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in set() method: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

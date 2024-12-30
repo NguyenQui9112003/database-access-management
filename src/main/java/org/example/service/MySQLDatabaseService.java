@@ -64,5 +64,24 @@ public class MySQLDatabaseService implements DatabaseService {
         databaseAdapter.closeConnection(con);
     }
 
-    
+    @Override
+    public <T> boolean delete(T entity) {
+        return databaseAdapter.delete(entity);
+    }
+
+    @Override
+    public <T> T get(Class<T> entityClass, Object id) {
+        return databaseAdapter.get(entityClass, id);
+    }
+
+    @Override
+    public <T> boolean save(T entity) {
+        return databaseAdapter.save(entity);
+    }
+
+    @Override
+    public <T> void set(Class<T> entityClass, Object id, String field, Object value) {
+        databaseAdapter.set(entityClass, id, field, value);
+    }
+
 }

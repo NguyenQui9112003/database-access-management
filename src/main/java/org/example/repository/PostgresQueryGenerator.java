@@ -9,6 +9,55 @@ import org.example.repository.builder.SQLQueryBuilder;
 
 public class PostgresQueryGenerator implements QueryGenerator {
     private final QueryBuilder queryBuilder = new SQLQueryBuilder();
+    
+    @Override
+    public <T> String selectByIdQuery(Class<T> entityClass, Object id) {
+        if (!entityClass.isAnnotationPresent(Entity.class)) {
+            throw new RuntimeException("Class is not an entity");
+        }
+
+        try {
+            // Get table name from @Table annotation
+            String tableName = entityClass.getSimpleName().toLowerCase();
+            if (entityClass.isAnnotationPresent(Table.class)) {
+                Table tableAnnotation = entityClass.getAnnotation(Table.class);
+                tableName = tableAnnotation.name();
+            }
+
+            // Find ID column name from @Id annotation
+            String idColumnName = "id";
+            for (Field field : entityClass.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Id.class)) {
+                    if (field.isAnnotationPresent(Column.class)) {
+                        Column column = field.getAnnotation(Column.class);
+                        idColumnName = column.name();
+                    } else {
+                        idColumnName = field.getName();
+                    }
+                    break;
+                }
+            }
+
+            // Build query
+            StringBuilder query = new StringBuilder()
+                .append("SELECT * FROM ")
+                .append(tableName)
+                .append(" WHERE ")
+                .append(idColumnName)
+                .append(" = ");
+
+            // Add ID value with proper formatting
+            if (id instanceof String) {
+                query.append("'").append(id).append("'");
+            } else {
+                query.append(id);
+            }
+
+            return query.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating select by ID query: " + e.getMessage());
+        }
+    }
 
     @Override
     public String createTableQuery(Class<?> clazz) {
