@@ -1,6 +1,5 @@
 package org.example.config;
 
-
 public class MySQLConfig implements IDatabaseConfig {
     private final String url;
     private final String databaseName;

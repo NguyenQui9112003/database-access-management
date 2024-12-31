@@ -1,10 +1,9 @@
-
 package org.example.config;
 
 public class PostgresToMySQLAdapter implements IDatabaseConfig {
-    private final DatabaseConfig postgresConfig;
+    private final PostgresConfig postgresConfig;
     
-    public PostgresToMySQLAdapter(DatabaseConfig postgresConfig) {
+    public PostgresToMySQLAdapter(PostgresConfig postgresConfig) {
         this.postgresConfig = postgresConfig;
     }
     

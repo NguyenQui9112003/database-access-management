@@ -1,12 +1,12 @@
 package org.example.config;
 
-public class DatabaseConfig implements IDatabaseConfig {
+public class PostgresConfig implements IDatabaseConfig {
     private String url;
     private String databaseName;
     private String username;
     private String password;
 
-    public DatabaseConfig(String url, String databaseName, String username, String password) {
+    public PostgresConfig(String url, String databaseName, String username, String password) {
         this.url = url;
         this.databaseName = databaseName;
         this.username = username;
@@ -38,6 +38,4 @@ public class DatabaseConfig implements IDatabaseConfig {
     public String getDatabaseName() {
         return databaseName;
     }
-
-    
 }
