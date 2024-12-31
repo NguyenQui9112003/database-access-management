@@ -1,7 +1,10 @@
-package org.example.service;
+package org.example.service.adaptee;
 
 import java.sql.Connection;
 import java.util.List;
+
+import org.example.service.DatabaseService;
+import org.example.service.dbservice.PostgresDatabaseService;
 import org.example.repository.DatabaseQueryAbstractFactory;
 
 public class PostgresAdapter implements DatabaseService {

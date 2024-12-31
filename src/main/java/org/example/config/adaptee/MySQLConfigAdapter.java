@@ -1,4 +1,7 @@
-package org.example.config;
+package org.example.config.adaptee;
+
+import org.example.config.IDatabaseConfig;
+import org.example.config.dbconfig.PostgresConfig;
 
 public class PostgresToMySQLAdapter implements IDatabaseConfig {
     private final PostgresConfig postgresConfig;
