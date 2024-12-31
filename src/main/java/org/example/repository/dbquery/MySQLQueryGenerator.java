@@ -1,7 +1,6 @@
-package org.example.repository;
+package org.example.repository.dbquery;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 public class MySQLQueryGenerator extends PostgresQueryGenerator {
     @Override

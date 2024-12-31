@@ -1,23 +1,27 @@
-package org.example.Facade;
+package org.example.facade;
 
+import java.util.List;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
-import org.example.config.DatabaseConfig;
-import org.example.connection.ConnectionFactory;
-import org.example.connection.MySQLConnectionFactory;
-import org.example.connection.PostgresConnectionFactory;
-import org.example.connectionManager.ConnectionManagerSingleton;
-
+import org.example.repository.concrete.MySQLQueryConcrete;
+import org.example.repository.concrete.PostgresQueryConcrete;
 import org.example.service.*;
 import org.example.repository.*;
+
+import org.example.connection.ConnectionFactory;
+import org.example.config.dbconfig.PostgresConfig;
+import org.example.connection.dbconnect.MySQLConnectionFactory;
+import org.example.connection.dbconnect.PostgresConnectionFactory;
+import org.example.connectionManager.ConnectionManagerSingleton;
+import org.example.service.concrete.MySQLConcrete;
+import org.example.service.concrete.PostgresConcrete;
 
 public class DatabaseControl {
     private Connection con;
     private DatabaseService dbService;
 
-    public DatabaseControl(DatabaseConfig dbConfig, String dbType) throws SQLException {
+    public DatabaseControl(PostgresConfig dbConfig, String dbType) throws SQLException {
         if ("postgres".equalsIgnoreCase(dbType)) {
             // create Manager connection
             ConnectionManagerSingleton connectionManagerSingleton = ConnectionManagerSingleton.getInstance(10);
@@ -46,7 +50,6 @@ public class DatabaseControl {
             // create MySQL Facade
             this.dbService = dbFactory.createDatabaseService(con, queryFactory);
         }
-        
         else {
             throw new IllegalArgumentException("System does not support database: " + dbType);
         }

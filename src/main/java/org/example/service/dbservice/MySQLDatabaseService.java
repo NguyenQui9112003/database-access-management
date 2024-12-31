@@ -1,14 +1,17 @@
-package org.example.service;
+package org.example.service.dbservice;
 
-import java.sql.Connection;
 import java.util.List;
+import java.sql.Connection;
+
+import org.example.service.DatabaseService;
+import org.example.service.adaptee.MySQLServiceAdapter;
 import org.example.repository.DatabaseQueryAbstractFactory;
 
 public class MySQLDatabaseService implements DatabaseService {
     private final DatabaseService databaseAdapter;
 
     public MySQLDatabaseService(Connection connection, DatabaseQueryAbstractFactory queryFactory) {
-        this.databaseAdapter = new PostgresAdapter(connection, queryFactory);
+        this.databaseAdapter = new MySQLServiceAdapter(connection, queryFactory);
     }
 
     @Override

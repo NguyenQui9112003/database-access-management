@@ -3,10 +3,10 @@ package org.example.config.adaptee;
 import org.example.config.IDatabaseConfig;
 import org.example.config.dbconfig.PostgresConfig;
 
-public class PostgresToMySQLAdapter implements IDatabaseConfig {
+public class MySQLConfigAdapter implements IDatabaseConfig {
     private final PostgresConfig postgresConfig;
     
-    public PostgresToMySQLAdapter(PostgresConfig postgresConfig) {
+    public MySQLConfigAdapter(PostgresConfig postgresConfig) {
         this.postgresConfig = postgresConfig;
     }
     

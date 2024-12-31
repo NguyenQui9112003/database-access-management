@@ -1,4 +1,6 @@
-package org.example.config;
+package org.example.config.dbconfig;
+
+import org.example.config.IDatabaseConfig;
 
 public class MySQLConfig implements IDatabaseConfig {
     private final String url;

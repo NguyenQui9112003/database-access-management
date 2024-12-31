@@ -1,9 +1,11 @@
-package org.example.repository;
+package org.example.repository.dbquery;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.example.annotations.*;
+import org.example.repository.QueryGenerator;
 import org.example.repository.builder.QueryBuilder;
 import org.example.repository.builder.SQLQueryBuilder;
 

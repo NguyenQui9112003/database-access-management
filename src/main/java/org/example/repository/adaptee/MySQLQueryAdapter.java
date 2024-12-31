@@ -1,7 +1,8 @@
-package org.example.repository;
+package org.example.repository.adaptee;
 
-import java.lang.reflect.Field;
 import java.util.List;
+
+import org.example.repository.dbquery.PostgresQueryGenerator;
 
 public class MySQLQueryAdapter extends PostgresQueryGenerator {
     private final PostgresQueryGenerator postgresGenerator;

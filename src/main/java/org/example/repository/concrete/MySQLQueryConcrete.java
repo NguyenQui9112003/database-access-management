@@ -1,8 +1,8 @@
-package org.example.repository;
+package org.example.repository.concrete;
 
-import java.sql.Connection;
-
-import org.example.service.DatabaseService;
+import org.example.repository.QueryGenerator;
+import org.example.repository.adaptee.MySQLQueryAdapter;
+import org.example.repository.DatabaseQueryAbstractFactory;
 
 public class MySQLQueryConcrete extends DatabaseQueryAbstractFactory {
     @Override

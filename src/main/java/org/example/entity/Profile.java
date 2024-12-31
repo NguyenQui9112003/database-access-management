@@ -18,6 +18,10 @@ public class Profile {
     @OneToOne(referencedTable = "users", foreignKey = "id")
     private User user;
 
+    public Profile() {
+        // Default constructor required for reflection
+    }
+
     // Constructor
     public Profile(Long id, String bio, String avatarUrl) {
         this.id = id;

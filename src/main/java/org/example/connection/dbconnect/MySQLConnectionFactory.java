@@ -1,8 +1,9 @@
-package org.example.connection;
+package org.example.connection.dbconnect;
 
-import org.example.config.dbconfig.PostgresConfig;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import org.example.config.dbconfig.PostgresConfig;
+import org.example.connection.ConnectionFactory;
 
 public class MySQLConnectionFactory extends ConnectionFactory {
     @Override

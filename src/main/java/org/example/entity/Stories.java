@@ -18,6 +18,10 @@ public class Stories {
     @ManyToOne(referencedTable = "users", foreignKey = "id")
     private User user;
 
+    public Stories() {
+        // Default constructor required for reflection
+    }
+
     // Constructor
     public Stories(Long id, String title, String content, User user) {
         this.id = id;

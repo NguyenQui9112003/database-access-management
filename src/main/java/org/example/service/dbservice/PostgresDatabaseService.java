@@ -1,8 +1,7 @@
-package org.example.service;
+package org.example.service.dbservice;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -11,10 +10,11 @@ import java.util.List;
 import org.example.annotations.OneToMany;
 import org.example.annotations.OneToOne;
 import org.example.repository.DatabaseQueryAbstractFactory;
-import org.example.repository.PostgresQueryGenerator;
+import org.example.repository.dbquery.PostgresQueryGenerator;
 import org.example.repository.QueryGenerator;
 
 import org.example.annotations.Column;  // Update this import
+import org.example.service.DatabaseService;
 
 public class PostgresDatabaseService implements DatabaseService {
     private Connection connection;

@@ -14,7 +14,6 @@ public interface DatabaseService {
     void updateFieldWithValue(Class<?> entity, String fieldNameToUpdate, Object newValue, String whereFieldName, Object whereValue);
     void closeConnection(Connection con);
     void insertBulk(List<Object> entities);
-    
     <T> T get(Class<T> entityClass, Object id);
     <T> void set(Class<T> entityClass, Object id, String field, Object value);
     <T> boolean save(T entity);

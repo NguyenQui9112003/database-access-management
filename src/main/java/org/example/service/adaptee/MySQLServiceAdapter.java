@@ -7,10 +7,10 @@ import org.example.service.DatabaseService;
 import org.example.service.dbservice.PostgresDatabaseService;
 import org.example.repository.DatabaseQueryAbstractFactory;
 
-public class PostgresAdapter implements DatabaseService {
+public class MySQLServiceAdapter implements DatabaseService {
     private final PostgresDatabaseService postgresService;
 
-    public PostgresAdapter(Connection connection, DatabaseQueryAbstractFactory factory) {
+    public MySQLServiceAdapter(Connection connection, DatabaseQueryAbstractFactory factory) {
         this.postgresService = new PostgresDatabaseService(connection, factory);
     }
 
