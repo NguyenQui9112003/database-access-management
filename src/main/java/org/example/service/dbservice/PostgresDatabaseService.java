@@ -171,11 +171,23 @@ public class PostgresDatabaseService implements DatabaseService {
     @Override
     public <T> boolean delete(T entity) {
         try {
-            String deleteQuery = queryGenerator.deleteQuery(entity.getClass(), null);
+            // Get the entity's ID
+            Field idField = entity.getClass().getDeclaredField("id");
+            idField.setAccessible(true);
+            Object id = idField.get(entity);
+            
+            if (id == null) {
+                throw new IllegalArgumentException("Cannot delete entity with null ID");
+            }
+
+            // Create WHERE condition for the ID
+            String whereCondition = "id = " + id;
+            String deleteQuery = queryGenerator.deleteQuery(entity.getClass(), whereCondition);
+            
             try (Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(deleteQuery);
+                int rowsAffected = stmt.executeUpdate(deleteQuery);
                 System.out.println("Record deleted successfully");
-                return true;
+                return rowsAffected > 0;
             }
         } catch (Exception e) {
             System.out.println("Error deleting record: " + e.getMessage());
