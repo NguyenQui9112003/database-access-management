@@ -1,4 +1,4 @@
-package org.example.service.adaptee;
+package org.example.service.adapter;
 
 import java.sql.Connection;
 import java.util.List;

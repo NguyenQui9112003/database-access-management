@@ -10,7 +10,7 @@ import org.example.service.*;
 import org.example.repository.*;
 
 import org.example.connection.ConnectionFactory;
-import org.example.config.dbconfig.PostgresConfig;
+import org.example.config.dbconfig.DatabaseConfig;
 import org.example.connection.dbconnect.MySQLConnectionFactory;
 import org.example.connection.dbconnect.PostgresConnectionFactory;
 import org.example.connectionManager.ConnectionManagerSingleton;
@@ -21,7 +21,7 @@ public class DatabaseControl {
     private Connection con;
     private DatabaseService dbService;
 
-    public DatabaseControl(PostgresConfig dbConfig, String dbType) throws SQLException {
+    public DatabaseControl(DatabaseConfig dbConfig, String dbType) throws SQLException {
         if ("postgres".equalsIgnoreCase(dbType)) {
             // create Manager connection
             ConnectionManagerSingleton connectionManagerSingleton = ConnectionManagerSingleton.getInstance(10);

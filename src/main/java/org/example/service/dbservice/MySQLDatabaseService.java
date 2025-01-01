@@ -4,7 +4,7 @@ import java.util.List;
 import java.sql.Connection;
 
 import org.example.service.DatabaseService;
-import org.example.service.adaptee.MySQLServiceAdapter;
+import org.example.service.adapter.MySQLServiceAdapter;
 import org.example.repository.DatabaseQueryAbstractFactory;
 
 public class MySQLDatabaseService implements DatabaseService {

@@ -2,12 +2,12 @@ package org.example.connection.dbconnect;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import org.example.config.dbconfig.PostgresConfig;
+import org.example.config.dbconfig.DatabaseConfig;
 import org.example.connection.ConnectionFactory;
 
 public class PostgresConnectionFactory extends ConnectionFactory {
     @Override
-    public Connection createConnection(PostgresConfig config) {
+    public Connection createConnection(DatabaseConfig config) {
         Connection con = null;
         try {
             Class.forName("org.postgresql.Driver");

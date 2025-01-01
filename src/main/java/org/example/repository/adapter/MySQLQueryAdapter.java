@@ -1,4 +1,4 @@
-package org.example.repository.adaptee;
+package org.example.repository.adapter;
 
 import java.util.List;
 

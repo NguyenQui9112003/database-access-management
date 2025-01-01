@@ -1,35 +1,35 @@
-package org.example.config.adaptee;
+package org.example.config.adapter;
 
 import org.example.config.IDatabaseConfig;
-import org.example.config.dbconfig.PostgresConfig;
+import org.example.config.dbconfig.DatabaseConfig;
 
 public class MySQLConfigAdapter implements IDatabaseConfig {
-    private final PostgresConfig postgresConfig;
+    private final DatabaseConfig databaseConfig;
     
-    public MySQLConfigAdapter(PostgresConfig postgresConfig) {
-        this.postgresConfig = postgresConfig;
+    public MySQLConfigAdapter(DatabaseConfig databaseConfig) {
+        this.databaseConfig = databaseConfig;
     }
     
     @Override
     public String getUrl() {
         // Convert postgres URL to MySQL URL format
-        String postgresUrl = postgresConfig.getUrl();
+        String postgresUrl = databaseConfig.getUrl();
         return postgresUrl.replace("jdbc:postgresql:", "jdbc:mysql:");
     }
     
     @Override
     public String getDatabaseName() {
-        return postgresConfig.getDatabaseName();
+        return databaseConfig.getDatabaseName();
     }
     
     @Override
     public String getUsername() {
-        return postgresConfig.getUsername();
+        return databaseConfig.getUsername();
     }
     
     @Override
     public String getPassword() {
-        return postgresConfig.getPassword();
+        return databaseConfig.getPassword();
     }
     
     @Override
